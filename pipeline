@@ -1,0 +1,36 @@
+pipeline {
+    agent none
+    stages {
+        stage ('SCM_Checkout') {
+            agent {label 'mysys1'} 
+            steps {
+                checkout scmGit(branches: [[name: '*/master']], 
+                extensions: [], 
+                userRemoteConfigs: [[url: 'https://github.com/ganeshhp/helloworldweb']])
+            }
+            
+        }
+
+        stage ('Build') {
+            agent {label 'slave01'} 
+            steps {
+                sh 'mvn clean install',
+                sh 'svn test'
+            }
+            
+        }
+    
+        stage ('Publish') {
+            agent {label 'slave01'} 
+            steps {
+                archiveArtifacts artifacts: 'target/*.war', followSymlinks: false
+            }
+            
+        }
+        stage('Deploy') {
+            steps {
+                
+            }
+        }
+    }
+}
