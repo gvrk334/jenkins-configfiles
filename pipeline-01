@@ -8,17 +8,14 @@ pipeline {
                 extensions: [], 
                 userRemoteConfigs: [[url: 'https://github.com/ganeshhp/helloworldweb']])
             }
-            
         }
 
         stage ('Build') {
-            #agent {label 'slave01'} 
             agent {label 'mysys1'}
             steps {
                 sh 'mvn clean install'
                 sh 'svn test'
             }
-            
         }
     
         stage ('Publish') {
@@ -26,7 +23,6 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'target/*.war', followSymlinks: false
             }
-            
         }
         stage('Deploy') {
             agent {label 'mysys1'}
@@ -40,7 +36,6 @@ pipeline {
             steps {
                 sh 'curl -uuser1:cmVmdGtuOjAxOjE3NDA4MDk0ODU6bDdmeVhaSWwzRW1hNWlXdTlSOGZpOFM5Q3Y5 -L -O "https://scanvas.jfrog.io/artifactory/webapp-1-generic-local/Helloworld.war"'
             }
-            
         }
          stage ('Publish') {
             agent {label 'slave01'} 
@@ -48,8 +43,6 @@ pipeline {
                 sh 'cp ./Helloworld.war /opt/tomcat/webapps/'
                 sh '/opt/tomcat/bin/catalina.sh run'
             }
-            
         }
- 
     }
 }
