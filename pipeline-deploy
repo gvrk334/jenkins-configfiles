@@ -1,0 +1,19 @@
+pipeline {
+    agent none
+    stages {
+
+        stage ('Download') {
+            agent {label 'slave01'} 
+            steps {
+                sh 'curl -uuser1:cmVmdGtuOjAxOjE3NDA4MDk0ODU6bDdmeVhaSWwzRW1hNWlXdTlSOGZpOFM5Q3Y5 -L -O "https://scanvas.jfrog.io/artifactory/webapp-1-generic-local/Helloworld.war"'
+            }
+        }
+         stage ('Deploy') {
+            agent {label 'slave01'} 
+            steps {
+                sh 'cp ./Helloworld.war /opt/tomcat/webapps/'
+                sh '/opt/tomcat/bin/catalina.sh run'
+            }
+        }
+    }
+}
