@@ -12,7 +12,8 @@ pipeline {
         }
 
         stage ('Build') {
-            agent {label 'slave01'} 
+            #agent {label 'slave01'} 
+            agent {label 'mysys1'}
             steps {
                 sh 'mvn clean install',
                 sh 'svn test'
@@ -21,16 +22,34 @@ pipeline {
         }
     
         stage ('Publish') {
-            agent {label 'slave01'} 
+            agent {label 'mysys1'}
             steps {
                 archiveArtifacts artifacts: 'target/*.war', followSymlinks: false
             }
             
         }
         stage('Deploy') {
+            agent {label 'mysys1'}
             steps {
-                curl -uuser1:cmVmdGtuOjAxOjE3NDA4MDkwNzM6RmVTajNjanBkM3hFRVlkQ2szWm1RR1ZiYlRn -T target/Helloworldwebapp-dev.war "https://scanvas.jfrog.io/artifactory/webapp-1-generic-local/Helloworld.war"
+                sh 'curl -uuser1:cmVmdGtuOjAxOjE3NDA4MDkwNzM6RmVTajNjanBkM3hFRVlkQ2szWm1RR1ZiYlRn -T target/Helloworldwebapp-dev.war "https://scanvas.jfrog.io/artifactory/webapp-1-generic-local/Helloworld.war"'
             }
         }
+
+        stage ('Publish') {
+            agent {label 'slave01'} 
+            steps {
+                sh 'curl -uuser1:cmVmdGtuOjAxOjE3NDA4MDk0ODU6bDdmeVhaSWwzRW1hNWlXdTlSOGZpOFM5Q3Y5 -L -O "https://scanvas.jfrog.io/artifactory/webapp-1-generic-local/Helloworld.war"'
+            }
+            
+        }
+         stage ('Publish') {
+            agent {label 'slave01'} 
+            steps {
+                sh 'cp ./Helloworld.war /opt/tomcat/webapps/'
+                sh '/opt/tomcat/bin/catalina.sh run'
+            }
+            
+        }
+ 
     }
 }
